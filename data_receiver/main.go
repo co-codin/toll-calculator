@@ -10,7 +10,10 @@ import (
 )
 
 func main() {
-	fmt.Println("working")
+	recv := NewDataReceiver()
+
+	http.HandleFunc("/ws", recv.handleWS)
+	http.ListenAndServe(":3000", nil)
 }
 
 type DataReceiver struct {
@@ -19,11 +22,17 @@ type DataReceiver struct {
 }
 
 func NewDataReceiver() *DataReceiver {
-	
+	return &DataReceiver{
+		msgch: make(chan types.OBUData, 128),
+	}
 }
 
 func (dr *DataReceiver) handleWS(w http.ResponseWriter, r *http.Request) {
-	conn, err := websocket.Upgrade(w, r, nil, 1028, 1028)
+	u := websocket.Upgrader{
+		ReadBufferSize: 1028,
+		WriteBufferSize: 1028,
+	}
+	conn, err := u.Upgrade(w, r, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -33,7 +42,7 @@ func (dr *DataReceiver) handleWS(w http.ResponseWriter, r *http.Request) {
 }
 
 func (dr *DataReceiver) wsReceiveLoop() {
-	fmt.Println("New OBU connected client")
+	fmt.Println("New OBU connected client connected !")
 	for {
 		var data types.OBUData
 		if err := dr.conn.ReadJSON(&data); err != nil {
