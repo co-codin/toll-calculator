@@ -1,6 +1,9 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
+
 	"github.com/co-codin/toll-calculator/types"
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 )
@@ -20,14 +23,14 @@ func NewKafkaProducer(topic string) (DataProducer, error) {
 		return nil, err
 	}
 
-	go fun() {
+	go func() {
 		for e := range p.Events() {
-			witch ev := e.(type) {
+			switch ev := e.(type) {
 			case *kafka.Message:
 				if ev.TopicPartition.Error != nil {
-					// fmt.Printf("Delivery failed: %v\n", ev.TopicPartition)
+					fmt.Printf("Delivery failed: %v\n", ev.TopicPartition)
 				} else {
-					// fmt.Printf("Delivered message to %v\n", ev.TopicPartition)
+					fmt.Printf("Delivered message to %v\n", ev.TopicPartition)
 				}
 			}
 		}
@@ -36,9 +39,21 @@ func NewKafkaProducer(topic string) (DataProducer, error) {
 	return &KafkaProducer{
 		producer: p,
 		topic:    topic,
-	}, nil 
+	}, nil
 }
 
 func (p *KafkaProducer) ProduceData(data types.OBUData) error {
-	return nil
+	b, err := json.Marshal(data)
+
+	if err != nil {
+		return err
+	}
+
+	return p.producer.Produce(&kafka.Message{
+		TopicPartition: kafka.TopicPartition{
+			Topic:     &p.topic,
+			Partition: kafka.PartitionAny,
+		},
+		Value: b,
+	}, nil)
 }
