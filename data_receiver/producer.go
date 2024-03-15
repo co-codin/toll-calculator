@@ -15,5 +15,30 @@ type KafkaProducer struct {
 }
 
 func NewKafkaProducer(topic string) (DataProducer, error) {
-	return nil, nil
+	p, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": "localhost"})
+	if err != nil {
+		return nil, err
+	}
+
+	go fun() {
+		for e := range p.Events() {
+			witch ev := e.(type) {
+			case *kafka.Message:
+				if ev.TopicPartition.Error != nil {
+					// fmt.Printf("Delivery failed: %v\n", ev.TopicPartition)
+				} else {
+					// fmt.Printf("Delivered message to %v\n", ev.TopicPartition)
+				}
+			}
+		}
+	}()
+
+	return &KafkaProducer{
+		producer: p,
+		topic:    topic,
+	}, nil 
+}
+
+func (p *KafkaProducer) ProduceData(data types.OBUData) error {
+	return nil
 }
