@@ -10,7 +10,10 @@ import (
 )
 
 func main() {
-	recv := NewDataReceiver()
+	recv, err := NewDataReceiver()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	http.HandleFunc("/ws", recv.handleWS)
 	http.ListenAndServe(":3000", nil)
@@ -32,6 +35,7 @@ func NewDataReceiver() (*DataReceiver, error) {
 	if err != nil {
 		return nil, err
 	}
+	p = NewLogMiddleware(p)
 	return &DataReceiver{
 		msgch: make(chan types.OBUData, 128),
 		prod:  p,
