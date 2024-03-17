@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
+	"time"
 
 	"github.com/co-codin/toll-calculator/types"
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
@@ -9,8 +11,9 @@ import (
 )
 
 type KafkaConsumer struct {
-	consumer  *kafka.Consumer
-	isRunning bool
+	consumer    *kafka.Consumer
+	isRunning   bool
+	calcService CalculatorServicer
 }
 
 func NewKafkaConsumer(topic string) (*KafkaConsumer, error) {
@@ -55,5 +58,12 @@ func (c *KafkaConsumer) readMessageLoop() {
 			})
 			continue
 		}
+
+		distance, err := c.calcService.CalculateDistance(data)
+		if err != nil {
+			logrus.Errorf("calculation error: %s", err)
+			continue
+		}
+		fmt.Println(distance)
 	}
 }
