@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/co-codin/toll-calculator/types"
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
@@ -16,7 +15,7 @@ type KafkaConsumer struct {
 	calcService CalculatorServicer
 }
 
-func NewKafkaConsumer(topic string) (*KafkaConsumer, error) {
+func NewKafkaConsumer(topic string, svc CalculatorServicer) (*KafkaConsumer, error) {
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers": "localhost",
 		"group.id":          "myGroup",
@@ -27,7 +26,8 @@ func NewKafkaConsumer(topic string) (*KafkaConsumer, error) {
 	}
 	c.SubscribeTopics([]string{topic}, nil)
 	return &KafkaConsumer{
-		consumer: c,
+		consumer:    c,
+		calcService: svc,
 	}, nil
 }
 
