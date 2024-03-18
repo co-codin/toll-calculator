@@ -43,8 +43,16 @@ func handleAggregate(svc Aggregator) http.HandlerFunc {
 	}
 }
 
-func handleGetInvoice(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("need tot return the invoice for the OBU ID"))
+func handleGetInvoice(svc Aggregator) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		values, ok := r.URL.Query()["obu"]
+		if !ok {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "missing OBU ID"})
+			return
+		}
+		obuID := values[0]
+		// svc.CalculateInvoice(obuID)
+	}
 }
 
 func makeStore() Storer {

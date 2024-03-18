@@ -56,7 +56,7 @@ go get github.com/prometheus/client_golang/prometheus
 Installing Prometheus natively on your system
 1. Clone the repository
 ```
-git clone https://github.com/promtheus/prometheus.git
+git clone https://github.com/prometheus/prometheus.git
 ```
 
 2. Install
