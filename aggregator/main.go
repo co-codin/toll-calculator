@@ -25,6 +25,7 @@ func main() {
 func makeHTTPTransport(listenAddr string, svc Aggregator) {
 	fmt.Println("HTTP transport running on port ", listenAddr)
 	http.HandleFunc("/aggregate", handleAggregate(svc))
+	http.HandleFunc("/invoice", handleGetInvoice)
 	http.ListenAndServe(listenAddr, nil)
 }
 
@@ -40,6 +41,10 @@ func handleAggregate(svc Aggregator) http.HandlerFunc {
 			return
 		}
 	}
+}
+
+func handleGetInvoice(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("need tot return the invoice for the OBU ID"))
 }
 
 func makeStore() Storer {
