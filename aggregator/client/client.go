@@ -35,7 +35,7 @@ func (c *Client) AggregateInvoice(distance types.Distance) error {
 		return err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("the service responded with non 200 status code %d", resp.StatusCode)
+		return fmt.Errorf("the service responded with non 200 status code %d", resp.Body)
 	}
 	return nil
 }
