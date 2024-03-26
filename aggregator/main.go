@@ -23,6 +23,10 @@ func main() {
 	makeHTTPTransport(*listenAddr, svc)
 }
 
+func makeGRPCTransport(listenAddr string, svc Aggregator) {
+	
+}
+
 func makeHTTPTransport(listenAddr string, svc Aggregator) {
 	fmt.Println("HTTP transport running on port ", listenAddr)
 	http.HandleFunc("/aggregate", handleAggregate(svc))
