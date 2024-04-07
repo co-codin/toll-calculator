@@ -26,6 +26,7 @@ func NewGRPCClient(endpoint string) (*GRPCClient, error) {
 	}, nil
 }
 
-func (grpc *GRPCClient) Aggregate(ctx context.Context, aggReq *types.AggregateRequest) error {
-	
+func (c *GRPCClient) Aggregate(ctx context.Context, req *types.AggregateRequest) error {
+	_, err := c.client.Aggregate(ctx, req)
+	return err
 }
